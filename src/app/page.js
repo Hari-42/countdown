@@ -1,129 +1,65 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
-import AlarmModal from "@/components/AlarmModal";
-import AlarmItem from "@/components/AlarmItem";
+import Image from "next/image";
 
 export default function Home() {
-  const [showModal, setShowModal] = useState(false);
-  const [alarms, setAlarms] = useState([]);
-  const [firedAlarm, setFiredAlarm] = useState(null);
-  const intervalRef = useRef(null);
-
-  const addAlarm = (alarm) => {
-    setAlarms((prev) => [...prev, { ...alarm, id: Date.now(), active: true }]);
-  };
-
-  const toggleAlarm = (id) => {
-    setAlarms((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, active: !a.active } : a))
-    );
-  };
-
-  const deleteAlarm = (id) => {
-    setAlarms((prev) => prev.filter((a) => a.id !== id));
-  };
-
-  // Check alarms every 10 seconds
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      const now = new Date();
-      const nowDate = now.toISOString().split("T")[0];
-      const nowH = now.getHours();
-      const nowM = now.getMinutes();
-
-      setAlarms((prev) =>
-        prev.map((alarm) => {
-          if (
-            alarm.active &&
-            alarm.date === nowDate &&
-            alarm.hour === nowH &&
-            alarm.minute === nowM &&
-            !alarm.fired
-          ) {
-            setFiredAlarm(alarm);
-            return { ...alarm, fired: true };
-          }
-          return alarm;
-        })
-      );
-    }, 10000);
-
-    return () => clearInterval(intervalRef.current);
-  }, []);
-
-  const dismissFired = () => {
-    setFiredAlarm(null);
-  };
-
-  const sorted = [...alarms].sort((a, b) => {
-    const da = new Date(`${a.date}T${String(a.hour).padStart(2, "0")}:${String(a.minute).padStart(2, "0")}`);
-    const db = new Date(`${b.date}T${String(b.hour).padStart(2, "0")}:${String(b.minute).padStart(2, "0")}`);
-    return da - db;
-  });
-
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      {/* Header */}
-      <header className="flex items-center justify-between px-8 py-6 max-w-2xl mx-auto border-b border-zinc-100 dark:border-zinc-900">
-        <h1 className="text-xl font-semibold tracking-widest uppercase text-zinc-400 dark:text-zinc-500">
-          Alarm
-        </h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xl font-light hover:opacity-75 transition-opacity"
-        >
-          +
-        </button>
-      </header>
-
-      {/* Alarm list */}
-      <main className="max-w-2xl mx-auto px-8 py-6 flex flex-col gap-3">
-        {sorted.length === 0 ? (
-          <p className="text-center text-zinc-400 dark:text-zinc-600 mt-20 text-sm">
-            Kein Alarm gestellt. Tippe auf{" "}
-            <span className="font-bold text-zinc-500">+</span> um einen hinzuzufügen.
-          </p>
-        ) : (
-          sorted.map((alarm) => (
-            <AlarmItem
-              key={alarm.id}
-              alarm={alarm}
-              onToggle={toggleAlarm}
-              onDelete={deleteAlarm}
-            />
-          ))
-        )}
-      </main>
-
-      {/* Add alarm modal */}
-      {showModal && (
-        <AlarmModal onSave={addAlarm} onClose={() => setShowModal(false)} />
-      )}
-
-      {/* Fired alarm notification */}
-      {firedAlarm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-5 max-w-xs w-full mx-4">
-            <div className="text-4xl animate-bounce">⏰</div>
-            <p className="text-lg font-semibold text-zinc-800 dark:text-zinc-100">Alarm!</p>
-            <p className="text-5xl font-mono font-bold text-zinc-900 dark:text-zinc-50">
-              {String(firedAlarm.hour).padStart(2, "0")}:{String(firedAlarm.minute).padStart(2, "0")}
-            </p>
-            <p className="text-sm text-zinc-400 dark:text-zinc-500">
-              {new Date(firedAlarm.date + "T00:00:00").toLocaleDateString("de-DE", {
-                weekday: "long", day: "2-digit", month: "long",
-              })}
-            </p>
-            <button
-              onClick={dismissFired}
-              className="w-full py-3 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-semibold hover:opacity-75 transition-opacity"
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <Image
+          className="dark:invert"
+          src="/next.svg"
+          alt="Next.js logo"
+          width={100}
+          height={20}
+          priority
+        />
+        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+            To get started, edit the page.js file.
+          </h1>
+          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+            Looking for a starting point or more instructions? Head over to{" "}
+            <a
+              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              className="font-medium text-zinc-950 dark:text-zinc-50"
             >
-              Schließen
-            </button>
-          </div>
+              Templates
+            </a>{" "}
+            or the{" "}
+            <a
+              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              className="font-medium text-zinc-950 dark:text-zinc-50"
+            >
+              Learning
+            </a>{" "}
+            center.
+          </p>
         </div>
-      )}
+        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+          <a
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
+            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              className="dark:invert"
+              src="/vercel.svg"
+              alt="Vercel logomark"
+              width={16}
+              height={16}
+            />
+            Deploy Now
+          </a>
+          <a
+            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
+            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Documentation
+          </a>
+        </div>
+      </main>
     </div>
   );
 }
