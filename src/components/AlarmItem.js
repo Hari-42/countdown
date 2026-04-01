@@ -29,11 +29,11 @@ export default function AlarmItem({ alarm, onToggle, onDelete }) {
         <button
           onClick={() => onToggle(alarm.id)}
           className={`relative w-12 h-7 rounded-full transition-colors duration-200 ${
-            active ? "bg-zinc-900 dark:bg-zinc-100" : "bg-zinc-200 dark:bg-zinc-700"
+            active ? "bg-green-500" : "bg-zinc-200 dark:bg-zinc-700"
           }`}
         >
           <span
-            className={`absolute top-1 w-5 h-5 rounded-full bg-white dark:bg-zinc-900 shadow transition-transform duration-200 ${
+            className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
               active ? "translate-x-6" : "translate-x-1"
             }`}
           />
