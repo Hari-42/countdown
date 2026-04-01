@@ -28,13 +28,13 @@ export default function AlarmItem({ alarm, onToggle, onDelete }) {
         {/* iOS-style toggle */}
         <button
           onClick={() => onToggle(alarm.id)}
-          className={`relative w-12 h-7 rounded-full transition-colors duration-200 ${
+          className={`relative w-12 h-7 rounded-full transition-colors duration-200 overflow-hidden ${
             active ? "bg-green-500" : "bg-zinc-200 dark:bg-zinc-700"
           }`}
         >
           <span
-            className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
-              active ? "translate-x-6" : "translate-x-1"
+            className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+              active ? "translate-x-5" : "translate-x-0"
             }`}
           />
         </button>
