@@ -1,65 +1,185 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useRef } from "react";
+import Notch from "@/components/Notch";
+import CountdownInput from "@/components/CountdownInput";
+import AlarmInput from "@/components/AlarmInput";
+import AlarmModal from "@/components/AlarmModal";
+import AlarmItem from "@/components/AlarmItem";
+
+// ── Timer View ────────────────────────────────────────────────────────────────
+function TimerView() {
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [isRunning, setIsRunning] = useState(false);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if (isRunning && timeLeft > 0) {
+      intervalRef.current = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    } else if (timeLeft === 0) {
+      setIsRunning(false);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [isRunning, timeLeft]);
+
+  const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  const isActive = timeLeft !== null;
+  const isFinished = timeLeft === 0;
+  const displayH = isActive ? Math.floor(timeLeft / 3600) : hours;
+  const displayM = isActive ? Math.floor((timeLeft % 3600) / 60) : minutes;
+  const displayS = isActive ? timeLeft % 60 : seconds;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="flex flex-col items-center gap-10">
+      <div className="flex items-end gap-6">
+        <CountdownInput value={displayH} onChange={isActive ? undefined : setHours} max={99} label="Stunden" disabled={isActive} />
+        <span className="text-4xl font-mono font-bold text-zinc-300 dark:text-zinc-700 mb-11 select-none">·</span>
+        <CountdownInput value={displayM} onChange={isActive ? undefined : setMinutes} max={60} label="Minuten" disabled={isActive} />
+        <span className="text-4xl font-mono font-bold text-zinc-300 dark:text-zinc-700 mb-11 select-none">·</span>
+        <CountdownInput value={displayS} onChange={isActive ? undefined : setSeconds} max={60} label="Sekunden" disabled={isActive} />
+      </div>
+
+      <div className={`px-5 py-2 rounded-full text-base font-mono tracking-widest transition-all ${
+        isFinished
+          ? "bg-red-100 dark:bg-red-950 text-red-500 dark:text-red-400 animate-pulse font-bold"
+          : "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400"
+      }`}>
+        {String(displayH).padStart(2, "0")}h{" "}
+        {String(displayM).padStart(2, "0")}m{" "}
+        {String(displayS).padStart(2, "0")}s
+        {isFinished && " — Zeit abgelaufen!"}
+      </div>
+
+      <div className="flex gap-3">
+        {!isRunning && !isFinished && (
+          <button
+            onClick={() => { if (!isActive) setTimeLeft(totalSeconds); setIsRunning(true); }}
+            disabled={!isActive && totalSeconds === 0}
+            className="px-8 py-2.5 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:opacity-75 disabled:opacity-25 transition-opacity"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {isActive ? "Weiter" : "Start"}
+          </button>
+        )}
+        {isRunning && (
+          <button
+            onClick={() => setIsRunning(false)}
+            className="px-8 py-2.5 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:opacity-75 transition-opacity"
           >
-            Documentation
-          </a>
+            Pause
+          </button>
+        )}
+        {isActive && (
+          <button
+            onClick={() => { setIsRunning(false); setTimeLeft(null); }}
+            className="px-8 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 text-sm font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Alarm View ────────────────────────────────────────────────────────────────
+function AlarmView() {
+  const [showModal, setShowModal] = useState(false);
+  const [alarms, setAlarms] = useState([]);
+  const [firedAlarm, setFiredAlarm] = useState(null);
+  const intervalRef = useRef(null);
+
+  const addAlarm = (alarm) =>
+    setAlarms((prev) => [...prev, { ...alarm, id: Date.now(), active: true }]);
+
+  const toggleAlarm = (id) =>
+    setAlarms((prev) => prev.map((a) => (a.id === id ? { ...a, active: !a.active } : a)));
+
+  const deleteAlarm = (id) =>
+    setAlarms((prev) => prev.filter((a) => a.id !== id));
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      const now = new Date();
+      const nowDate = now.toISOString().split("T")[0];
+      setAlarms((prev) =>
+        prev.map((alarm) => {
+          if (alarm.active && alarm.date === nowDate && alarm.hour === now.getHours() && alarm.minute === now.getMinutes() && !alarm.fired) {
+            setFiredAlarm(alarm);
+            return { ...alarm, fired: true };
+          }
+          return alarm;
+        })
+      );
+    }, 10000);
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const sorted = [...alarms].sort((a, b) => {
+    const da = new Date(`${a.date}T${String(a.hour).padStart(2, "0")}:${String(a.minute).padStart(2, "0")}`);
+    const db = new Date(`${b.date}T${String(b.hour).padStart(2, "0")}:${String(b.minute).padStart(2, "0")}`);
+    return da - db;
+  });
+
+  return (
+    <div className="w-full flex flex-col gap-3">
+      <div className="flex justify-end">
+        <button
+          onClick={() => setShowModal(true)}
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xl font-light hover:opacity-75 transition-opacity"
+        >
+          +
+        </button>
+      </div>
+
+      {sorted.length === 0 ? (
+        <p className="text-center text-zinc-400 dark:text-zinc-600 mt-16 text-sm">
+          Kein Alarm gestellt. Tippe auf <span className="font-bold text-zinc-500">+</span> um einen hinzuzufügen.
+        </p>
+      ) : (
+        sorted.map((alarm) => (
+          <AlarmItem key={alarm.id} alarm={alarm} onToggle={toggleAlarm} onDelete={deleteAlarm} />
+        ))
+      )}
+
+      {showModal && <AlarmModal onSave={addAlarm} onClose={() => setShowModal(false)} />}
+
+      {firedAlarm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-5 max-w-xs w-full mx-4">
+            <div className="text-4xl animate-bounce">⏰</div>
+            <p className="text-5xl font-mono font-bold text-zinc-900 dark:text-zinc-50">
+              {String(firedAlarm.hour).padStart(2, "0")}:{String(firedAlarm.minute).padStart(2, "0")}
+            </p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-500">
+              {new Date(firedAlarm.date + "T00:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "long" })}
+            </p>
+            <button
+              onClick={() => setFiredAlarm(null)}
+              className="w-full py-3 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-semibold hover:opacity-75 transition-opacity"
+            >
+              Schließen
+            </button>
+          </div>
         </div>
-      </main>
+      )}
+    </div>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function Home() {
+  const [active, setActive] = useState("Timer");
+
+  return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center pt-12 px-8">
+      <Notch tabs={["Timer", "Alarm"]} active={active} onChange={setActive} />
+
+      <div className="w-full max-w-2xl mt-14 flex flex-col items-center">
+        {active === "Timer" ? <TimerView /> : <AlarmView />}
+      </div>
     </div>
   );
 }
