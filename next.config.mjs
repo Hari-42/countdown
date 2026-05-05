@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
-    basePath: '/countdown', // dein Repo-Name
+  output: 'export',
+  basePath: '/countdown',
 };
 
 export default nextConfig;
