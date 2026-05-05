@@ -25,6 +25,7 @@ export default function AlarmItem({ alarm, onToggle, onDelete }) {
       </div>
 
       <div className="flex items-center gap-4">
+        {/* iOS-style toggle */}
         <button
           onClick={() => onToggle(alarm.id)}
           className={`relative w-12 h-7 rounded-full transition-colors duration-200 overflow-hidden ${
@@ -38,6 +39,7 @@ export default function AlarmItem({ alarm, onToggle, onDelete }) {
           />
         </button>
 
+        {/* Delete */}
         <button
           onClick={() => onDelete(alarm.id)}
           className="text-zinc-300 dark:text-zinc-600 hover:text-red-400 dark:hover:text-red-500 transition-colors text-lg leading-none"

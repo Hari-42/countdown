@@ -28,6 +28,7 @@ export default function AlarmModal({ onSave, onClose }) {
           </button>
         </div>
 
+        {/* Date */}
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
             Datum
@@ -41,6 +42,7 @@ export default function AlarmModal({ onSave, onClose }) {
           />
         </div>
 
+        {/* Time */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
             Uhrzeit
@@ -52,6 +54,7 @@ export default function AlarmModal({ onSave, onClose }) {
           </div>
         </div>
 
+        {/* Actions */}
         <div className="flex gap-3 pt-2">
           <button
             onClick={onClose}
