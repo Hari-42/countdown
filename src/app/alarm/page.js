@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import AlarmModal from "@/components/AlarmModal";
 import AlarmItem from "@/components/AlarmItem";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
-  const [alarms, setAlarms] = useState([]);
+  const [alarms, setAlarms] = useLocalStorage("countdown_alarms", []);
   const [firedAlarm, setFiredAlarm] = useState(null);
   const intervalRef = useRef(null);
 
