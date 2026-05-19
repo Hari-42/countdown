@@ -6,6 +6,7 @@ import CountdownInput from "@/components/CountdownInput";
 import AlarmInput from "@/components/AlarmInput";
 import AlarmModal from "@/components/AlarmModal";
 import AlarmItem from "@/components/AlarmItem";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 // ── Timer View ────────────────────────────────────────────────────────────────
 function TimerView() {
@@ -87,7 +88,7 @@ function TimerView() {
 // ── Alarm View ────────────────────────────────────────────────────────────────
 function AlarmView() {
   const [showModal, setShowModal] = useState(false);
-  const [alarms, setAlarms] = useState([]);
+  const [alarms, setAlarms] = useLocalStorage("countdown_alarms", []);
   const [firedAlarm, setFiredAlarm] = useState(null);
   const intervalRef = useRef(null);
 
