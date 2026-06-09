@@ -1,7 +1,9 @@
 "use client";
 
+import { TIMEZONES } from "@/utils/timezones";
+
 export default function AlarmItem({ alarm, onToggle, onDelete }) {
-  const { date, hour, minute, active } = alarm;
+  const { date, hour, minute, active, timezone } = alarm;
 
   const formatted = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
   const dateLabel = new Date(date + "T00:00:00").toLocaleDateString("de-DE", {
@@ -10,6 +12,10 @@ export default function AlarmItem({ alarm, onToggle, onDelete }) {
     month: "short",
     year: "numeric",
   });
+
+  const tzLabel = timezone
+    ? (TIMEZONES.find((t) => t.value === timezone)?.label ?? timezone)
+    : null;
 
   return (
     <div className={`flex items-center justify-between px-5 py-4 rounded-2xl border transition-all ${
@@ -22,6 +28,11 @@ export default function AlarmItem({ alarm, onToggle, onDelete }) {
           {formatted}
         </span>
         <span className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">{dateLabel}</span>
+        {tzLabel && (
+          <span className="text-xs text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full px-2 py-0.5 mt-1 w-fit">
+            {tzLabel}
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-4">
