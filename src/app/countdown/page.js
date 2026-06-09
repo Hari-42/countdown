@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import CountdownInput from "@/components/CountdownInput";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import TimerQuickInput from "@/components/TimerQuickInput";
 
 export default function CountdownPage() {
   const [hours, setHours] = useLocalStorage("countdown_timer_h", 0);
@@ -69,6 +70,11 @@ export default function CountdownPage() {
           {String(displayS).padStart(2, "0")}s
           {isFinished && " — Zeit abgelaufen!"}
         </div>
+
+        <TimerQuickInput
+          disabled={isActive}
+          onSet={(h, m, s) => { setHours(h); setMinutes(m); setSeconds(s); }}
+        />
 
         <div className="flex gap-3">
           {!isRunning && !isFinished && (

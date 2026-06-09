@@ -8,6 +8,7 @@ import AlarmModal from "@/components/AlarmModal";
 import AlarmItem from "@/components/AlarmItem";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { getNowInTimezone, getLocalTimezone } from "@/utils/timezones";
+import TimerQuickInput from "@/components/TimerQuickInput";
 
 // ── Timer View ────────────────────────────────────────────────────────────────
 function TimerView() {
@@ -54,6 +55,11 @@ function TimerView() {
         {String(displayS).padStart(2, "0")}s
         {isFinished && " — Zeit abgelaufen!"}
       </div>
+
+      <TimerQuickInput
+        disabled={isActive}
+        onSet={(h, m, s) => { setHours(h); setMinutes(m); setSeconds(s); }}
+      />
 
       <div className="flex gap-3">
         {!isRunning && !isFinished && (
