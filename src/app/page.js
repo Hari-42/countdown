@@ -7,6 +7,7 @@ import AlarmInput from "@/components/AlarmInput";
 import AlarmModal from "@/components/AlarmModal";
 import AlarmItem from "@/components/AlarmItem";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { getNowInTimezone, getLocalTimezone } from "@/utils/timezones";
 
 // ── Timer View ────────────────────────────────────────────────────────────────
 function TimerView() {
@@ -103,11 +104,12 @@ function AlarmView() {
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      const now = new Date();
-      const nowDate = now.toISOString().split("T")[0];
       setAlarms((prev) =>
         prev.map((alarm) => {
-          if (alarm.active && alarm.date === nowDate && alarm.hour === now.getHours() && alarm.minute === now.getMinutes() && !alarm.fired) {
+          if (!alarm.active || alarm.fired) return alarm;
+          const tz = alarm.timezone ?? getLocalTimezone();
+          const { date, hour, minute } = getNowInTimezone(tz);
+          if (alarm.date === date && alarm.hour === hour && alarm.minute === minute) {
             setFiredAlarm(alarm);
             return { ...alarm, fired: true };
           }
