@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import AlarmModal from "@/components/AlarmModal";
 import AlarmItem from "@/components/AlarmItem";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { getNowInTimezone, getLocalTimezone } from "@/utils/timezones";
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
@@ -28,20 +29,12 @@ export default function Home() {
   // Check alarms every 10 seconds
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      const now = new Date();
-      const nowDate = now.toISOString().split("T")[0];
-      const nowH = now.getHours();
-      const nowM = now.getMinutes();
-
       setAlarms((prev) =>
         prev.map((alarm) => {
-          if (
-            alarm.active &&
-            alarm.date === nowDate &&
-            alarm.hour === nowH &&
-            alarm.minute === nowM &&
-            !alarm.fired
-          ) {
+          if (!alarm.active || alarm.fired) return alarm;
+          const tz = alarm.timezone ?? getLocalTimezone();
+          const { date, hour, minute } = getNowInTimezone(tz);
+          if (alarm.date === date && alarm.hour === hour && alarm.minute === minute) {
             setFiredAlarm(alarm);
             return { ...alarm, fired: true };
           }

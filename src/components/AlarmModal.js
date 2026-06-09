@@ -2,16 +2,21 @@
 
 import { useState } from "react";
 import AlarmInput from "./AlarmInput";
+import { TIMEZONES, getLocalTimezone } from "@/utils/timezones";
 
 export default function AlarmModal({ onSave, onClose }) {
   const today = new Date().toISOString().split("T")[0];
+  const localTz = getLocalTimezone();
+  const defaultTz = TIMEZONES.find((t) => t.value === localTz)?.value ?? "UTC";
+
   const [date, setDate] = useState(today);
   const [hour, setHour] = useState(0);
   const [minute, setMinute] = useState(0);
+  const [timezone, setTimezone] = useState(defaultTz);
 
   const handleSave = () => {
     if (!date) return;
-    onSave({ date, hour, minute });
+    onSave({ date, hour, minute, timezone });
     onClose();
   };
 
@@ -52,6 +57,24 @@ export default function AlarmModal({ onSave, onClose }) {
             <span className="text-3xl font-mono font-bold text-zinc-300 dark:text-zinc-600 mt-3 select-none">:</span>
             <AlarmInput value={minute} onChange={setMinute} max={59} label="Minute" />
           </div>
+        </div>
+
+        {/* Timezone */}
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
+            Zeitzone
+          </label>
+          <select
+            value={timezone}
+            onChange={(e) => setTimezone(e.target.value)}
+            className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 outline-none focus:border-zinc-500 dark:focus:border-zinc-400 transition-colors"
+          >
+            {TIMEZONES.map((tz) => (
+              <option key={tz.value} value={tz.value}>
+                {tz.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Actions */}
